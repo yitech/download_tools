@@ -24,8 +24,6 @@ async def get_size(url: str):
 def download_range(url: str, start: int, end: int,output: str, chunk_size:int = 1024):
     headers = {'Range': f'bytes={start}-{end}'}
     response = requests.get(url, headers=headers)
-    if os.path.exists(output) and os.path.getsize(output) == end - start + 1:
-        return
     with open(output, 'wb') as f:
         for part in response.iter_content(chunk_size):
             f.write(part)
@@ -46,7 +44,7 @@ async def download(executor, url, output, chunk_size=1000000):
             start + chunk_size - 1,
             f'{output}.part{i}',
         )
-        for i, start in enumerate(chunks)
+        for i, start in enumerate(chunks) if not os.path.exists(f'{output}.part{i}')
     ]
 
     await asyncio.wait(tasks)
