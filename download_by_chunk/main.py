@@ -24,7 +24,8 @@ async def get_size(url: str):
 def download_range(url: str, start: int, end: int,output: str, chunk_size:int = 1024):
     headers = {'Range': f'bytes={start}-{end}'}
     response = requests.get(url, headers=headers)
-
+    if os.path.exists(output) and os.path.getsize(output) == end - start + 1:
+        return
     with open(output, 'wb') as f:
         for part in response.iter_content(chunk_size):
             f.write(part)
